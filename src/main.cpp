@@ -142,27 +142,17 @@ int main() {
            }
          */
 
-          //Experiment with Frenet  (violates many things and stop)
+          //Experiment with Frenet  
           double dist_inc = 0.4;// 0.5;
-          //Calculate frenet s,d  <----This calculation causes A LOT of STRANGE BEHAVIORS and it is NOT NECESSARY
-              vector<double> frenet;
-              frenet=getFrenet(car_x, car_y, car_yaw, 
-                               map_waypoints_x,map_waypoints_y);
-                        //previous_path_x,previous_path_y);
-         
           for (int i = 0; i < 50; ++i) {
-//             frenet[0]+=(i+1)*(dist_inc); //increase one s //<--Causes the simulator to go wrong.
-             frenet[0] =car_s+(i+1)*(dist_inc);
+             double next_s = car_s+(i+1)*(dist_inc);
+             double next_d = 6; //middle lane
              //calculate x,y
              vector<double> next_point;
-             next_point= getXY(frenet[0], 6, map_waypoints_s, 
+             next_point= getXY(next_s, next_d, map_waypoints_s, 
                          map_waypoints_x,map_waypoints_y);
-                    // previous_path_x, 
-                    // previous_path_y) ;
-
-                next_x_vals.push_back(next_point[0]);
-                next_y_vals.push_back(next_point[1]);     
-
+             next_x_vals.push_back(next_point[0]);
+             next_y_vals.push_back(next_point[1]);     
            }
 
 //Other
