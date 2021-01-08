@@ -40,6 +40,10 @@ double distance(double x1, double y1, double x2, double y2) {
 }
 
 // Calculate closest waypoint to current x, y position
+// x,y is the current position 
+// maps_x and maps_y are the waypoints
+// returns the index to the closes waypoint so the closest waypoint is
+// maps_x[r],maps_y[r]
 int ClosestWaypoint(double x, double y, const vector<double> &maps_x, 
                     const vector<double> &maps_y) {
   double closestLen = 100000; //large number
@@ -58,21 +62,27 @@ int ClosestWaypoint(double x, double y, const vector<double> &maps_x,
   return closestWaypoint;
 }
 
-// Returns next waypoint of the closest waypoint
+// Returns next waypoint of the closest waypoint (that means always looking forward)
+// x,y is the current position
+// perhaps theta is the current heading??
+// maps_x and maps_y are the waypoints
+// it actually returns the same as closest way point  if the difference in angles
+// is less than 90
+// if it is greater, (that means it is behind you??) it retuns the next one or 0
 int NextWaypoint(double x, double y, double theta, const vector<double> &maps_x, 
                  const vector<double> &maps_y) {
-  int closestWaypoint = ClosestWaypoint(x,y,maps_x,maps_y);
+  int closestWaypoint = ClosestWaypoint(x,y,maps_x,maps_y); //gets the index to the closes waypoint to x,y
 
-  double map_x = maps_x[closestWaypoint];
+  double map_x = maps_x[closestWaypoint]; //this is the waypoint
   double map_y = maps_y[closestWaypoint];
 
-  double heading = atan2((map_y-y),(map_x-x));
+  double heading = atan2((map_y-y),(map_x-x)); //here calculate the heading
 
-  double angle = fabs(theta-heading);
-  angle = std::min(2*pi() - angle, angle);
+  double angle = fabs(theta-heading);  // the difference in angle 
+  angle = std::min(2*pi() - angle, angle); //correction
 
-  if (angle > pi()/2) {
-    ++closestWaypoint;
+  if (angle > pi()/2) { //if the angle is greater than 90 (behind you)
+    ++closestWaypoint;  //return the next one
     if (closestWaypoint == maps_x.size()) {
       closestWaypoint = 0;
     }
@@ -85,7 +95,7 @@ int NextWaypoint(double x, double y, double theta, const vector<double> &maps_x,
 vector<double> getFrenet(double x, double y, double theta, 
                          const vector<double> &maps_x, 
                          const vector<double> &maps_y) {
-  int next_wp = NextWaypoint(x,y, theta, maps_x,maps_y);
+  int next_wp = NextWaypoint(x,y, theta, maps_x,maps_y); //generates the "next" waypoint
 
   int prev_wp;
   prev_wp = next_wp-1;

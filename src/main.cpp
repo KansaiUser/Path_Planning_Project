@@ -98,14 +98,18 @@ int main() {
            *   sequentially every .02 seconds
            */
 
+          //std::cout<<sensor_fusion<<std::endl;
+
           //First Straigth Path
-          /* double dist_inc = 0.5;
+      /*     double dist_inc = 0.5;
           for (int i = 0; i < 50; ++i) {
                next_x_vals.push_back(car_x + (dist_inc*i)*cos(deg2rad(car_yaw)));
                next_y_vals.push_back(car_y + (dist_inc*i)*sin(deg2rad(car_yaw)));
-           } */
+           } 
+           */
 
-          double pos_x;
+         //Circular Path
+        /*  double pos_x;
           double pos_y;
           double angle;
           int path_size = previous_path_x.size();
@@ -136,8 +140,46 @@ int main() {
                 pos_x += (dist_inc)*cos(angle+(i+1)*(pi()/100));
                 pos_y += (dist_inc)*sin(angle+(i+1)*(pi()/100));
            }
+         */
 
+          //Experiment with Frenet  (violates many things and stop)
+          double dist_inc = 0.4;// 0.5;
+          //Calculate frenet s,d  <----This calculation causes A LOT of STRANGE BEHAVIORS and it is NOT NECESSARY
+              vector<double> frenet;
+              frenet=getFrenet(car_x, car_y, car_yaw, 
+                               map_waypoints_x,map_waypoints_y);
+                        //previous_path_x,previous_path_y);
+         
+          for (int i = 0; i < 50; ++i) {
+//             frenet[0]+=(i+1)*(dist_inc); //increase one s //<--Causes the simulator to go wrong.
+             frenet[0] =car_s+(i+1)*(dist_inc);
+             //calculate x,y
+             vector<double> next_point;
+             next_point= getXY(frenet[0], 6, map_waypoints_s, 
+                         map_waypoints_x,map_waypoints_y);
+                    // previous_path_x, 
+                    // previous_path_y) ;
 
+                next_x_vals.push_back(next_point[0]);
+                next_y_vals.push_back(next_point[1]);     
+
+           }
+
+//Other
+/*
+          double dist_inc = 0.5;
+          for (int i = 0; i < 50; ++i) {
+               double next_s = car_s+(i+1)*dist_inc;
+               double next_d = 6; 
+               vector<double> xy= getXY(next_s,next_d,
+                                         max_waypoints_s,max_waypoints_x,max_waypoints_y);
+
+               next_x_vals.push_back(xy[0]);
+               next_y_vals.push_back(xy[1]);
+           }
+*/
+
+//END
 // passing
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
