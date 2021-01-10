@@ -54,7 +54,7 @@ int main() {
   //lane
   int lane =1;
   //reference velocity
-  double ref_vel= 49.5;
+  double ref_vel=  49.5;
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel]
@@ -96,6 +96,50 @@ int main() {
 
           int prev_size = previous_path_x.size();
           //std::cout<<"Prev"<<prev_size<< std::endl;
+
+          //HERE the code for Sensor Fusion
+
+          //if  something
+          if(prev_size>0){
+            car_s = end_path_s;
+          }
+
+          bool too_close = false;
+
+          for (int i=0; i< sensor_fusion.size();i++)
+          {
+             float d = sensor_fusion[i][6];
+             if(d<(2+4*lane+2)&&d>(2+4*lane-2))  //the car is in our lane
+             {  
+               double vx = sensor_fusion[i][3];
+               double vy = sensor_fusion[i][4];
+
+               double check_speed = distance(0,0,vx,vy); //calculate the magnitude
+               double check_car_s = sensor_fusion[i][5];
+
+               check_car_s += ((double)prev_size*0.02*check_speed); //project the s value outwards in time
+
+               if((check_car_s>car_s) && ((check_car_s-car_s)<30)){ //if the car is too near
+
+               ref_vel=29.5;
+
+               }
+
+
+             }
+
+
+
+
+          }
+
+
+
+
+
+
+
+
 
           json msgJson;
 
