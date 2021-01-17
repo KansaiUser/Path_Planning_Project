@@ -54,7 +54,7 @@ int main() {
   //lane
   int lane =1;
   //reference velocity
-  double ref_vel=  49.5;
+  double ref_vel= 0.0; // 49.5; (acceleration has been included)
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel]
@@ -126,13 +126,18 @@ int main() {
 
                if((check_car_s>tip) && ((check_car_s-tip)<30)){ //if the car is too near
 
-               //ref_vel=29.5;
+                 //ref_vel=29.5;
+                 // some messages
                  std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
                  if(check_car_s-tip<0){
                    std::cout<<"COLISSION!!!!!!"<<std::endl;
                  }
 
-                 ref_vel=29.5;
+                 //we could take actiom by lowering the speed or indicating the necessity of changing lanes
+
+
+                 //ref_vel=29.5;
+                 too_close = true;
 
 
                }
@@ -140,11 +145,20 @@ int main() {
 
           }  //for all cars
 
+        
+          if(too_close){    // Hey! Slow down!
+            ref_vel -= .224;
+          }
+          else if(ref_vel <49.5){  // You are too slow! Hurry up!
+             ref_vel += .224;
+          }
 
-        //check if we are out of lane  (car_d)
-        if(car_d>(2+4*lane+2)||car_d<(2+4*lane-2)){
-          std::cout<<"WHATTTT: Car out of lane "<<car_d<<std::endl;
-        }
+
+
+          //check if we are out of lane  (car_d)
+          if(car_d>(2+4*lane+2)||car_d<(2+4*lane-2)){
+            std::cout<<"WHATTTT: Car out of lane "<<car_d<<std::endl;
+          }
 
 
 
