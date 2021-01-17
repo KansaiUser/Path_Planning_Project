@@ -99,9 +99,13 @@ int main() {
 
           //HERE the code for Sensor Fusion
 
+          double tip=car_s;
+
           //if  something
           if(prev_size>0){
-            car_s = end_path_s;
+            //car_s = end_path_s;
+            tip= end_path_s;
+            std::cout<<"car s: "<<car_s<<" tip "<<end_path_s<<std::endl;
           }
 
           bool too_close = false;
@@ -111,29 +115,36 @@ int main() {
              float d = sensor_fusion[i][6];
              if(d<(2+4*lane+2)&&d>(2+4*lane-2))  //the car is in our lane
              {  
+               //get the velocity 
                double vx = sensor_fusion[i][3];
                double vy = sensor_fusion[i][4];
 
                double check_speed = distance(0,0,vx,vy); //calculate the magnitude
-               double check_car_s = sensor_fusion[i][5];
+               double check_car_s = sensor_fusion[i][5];  //The longitudinal position of the car 
 
                check_car_s += ((double)prev_size*0.02*check_speed); //project the s value outwards in time
 
-               if((check_car_s>car_s) && ((check_car_s-car_s)<30)){ //if the car is too near
+               if((check_car_s>tip) && ((check_car_s-tip)<30)){ //if the car is too near
 
-               ref_vel=29.5;
+               //ref_vel=29.5;
+                 std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
+                 if(check_car_s-tip<0){
+                   std::cout<<"COLISSION!!!!!!"<<std::endl;
+                 }
+
+                 ref_vel=29.5;
+
 
                }
+             }  // if car in our lane
+
+          }  //for all cars
 
 
-             }
-
-
-
-
-          }
-
-
+        //check if we are out of lane  (car_d)
+        if(car_d>(2+4*lane+2)||car_d<(2+4*lane-2)){
+          std::cout<<"WHATTTT: Car out of lane "<<car_d<<std::endl;
+        }
 
 
 
