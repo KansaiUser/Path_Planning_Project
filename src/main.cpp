@@ -3,20 +3,31 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "PID.h"
+
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "helpers.h"
 #include "json.hpp"
 #include "spline.h"
 
+//#include "PID.h"
+
 // for convenience
 using nlohmann::json;
 using std::string;
 using std::vector;
 
+
 int main() {
   uWS::Hub h;
 
+  // velocity controller
+  PID vel_control;
+  vel_control.Init(0.005, 0.0, 0.01);
+
+  
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
   vector<double> map_waypoints_x;
   vector<double> map_waypoints_y;
@@ -57,7 +68,8 @@ int main() {
   double ref_vel= 0.0; // 49.5; (acceleration has been included)
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel]
+               &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel,
+               &vel_control]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -105,7 +117,7 @@ int main() {
           if(prev_size>0){
             //car_s = end_path_s;
             tip= end_path_s;
-            std::cout<<"car s: "<<car_s<<" tip "<<end_path_s<<"  d "<<car_d<<std::endl;
+           // std::cout<<"car s: "<<car_s<<" tip "<<end_path_s<<"  d "<<car_d<<std::endl;
           }
 
           bool too_close = false;
@@ -128,9 +140,9 @@ int main() {
 
                  //ref_vel=29.5;
                  // some messages
-                 std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
+                 //std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
                  if(check_car_s-tip<0){
-                   std::cout<<"COLISSION!!!!!!"<<std::endl;
+                  // std::cout<<"COLISSION!!!!!!"<<std::endl;
                  }
 
                  //we could take actiom by lowering the speed or indicating the necessity of changing lanes
@@ -138,7 +150,7 @@ int main() {
 
                  //ref_vel=29.5;
                  too_close = true;
-                 ref_vel -= .224;
+                 //ref_vel -= .224;
                  if(lane>0){
                    lane=0;
                  }
@@ -148,15 +160,32 @@ int main() {
 
           }  //for all cars
 
-        
+/*                 
           if(too_close){    // Hey! Slow down!
             ref_vel -= .224;
           }
           else if(ref_vel <49.5){  // You are too slow! Hurry up!
              ref_vel += .224;
           }
+         
+  */      
+
+        double vel_error;
+         if(too_close){
+             vel_error= ref_vel;
+         }
+         else{
+           vel_error= ref_vel-49.5;
+         }
+
+          //double vel_error= ref_vel-49.5;
+        
+          vel_control.UpdateError(vel_error);
+          double new_vel= vel_control.GetResult();
+          ref_vel += new_vel;
 
 
+         std::cout<<"Velocity: "<<ref_vel<<std::endl;
 
           //check if we are out of lane  (car_d)
           if(car_d>(2+4*lane+2)||car_d<(2+4*lane-2)){
@@ -253,20 +282,31 @@ int main() {
 
           // Generate 3 (three) points 
           // evenly spaced , ahead of the starting reference
-          vector<double> next_wp0 = getXY(car_s+30, (2+4*lane) ,
+         /* vector<double> next_wp0 = getXY(car_s+30, (2+4*lane) ,
                                           map_waypoints_s,map_waypoints_x,map_waypoints_y );
           vector<double> next_wp1 = getXY(car_s+60, (2+4*lane) ,
                                           map_waypoints_s,map_waypoints_x,map_waypoints_y );
           vector<double> next_wp2 = getXY(car_s+90, (2+4*lane) ,
                                           map_waypoints_s,map_waypoints_x,map_waypoints_y );                                                                
+*/
+        // Generate 4 points
+          vector<double> next_wp0 = getXY(car_s+30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<double> next_wp1 = getXY(car_s+50, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<double> next_wp2 = getXY(car_s+70, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<double> next_wp3 = getXY(car_s+90, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+
+
+
 
           ptsx.push_back(next_wp0[0]);
           ptsx.push_back(next_wp1[0]);
           ptsx.push_back(next_wp2[0]);
+          ptsx.push_back(next_wp3[0]);
 
           ptsy.push_back(next_wp0[1]);
           ptsy.push_back(next_wp1[1]);
           ptsy.push_back(next_wp2[1]);
+          ptsy.push_back(next_wp3[1]);
 
          //Now we do a transformation for the points to the car point of view
 
@@ -359,3 +399,4 @@ int main() {
   
   h.run();
 }
+
