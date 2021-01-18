@@ -138,6 +138,7 @@ int main() {
 
                  //ref_vel=29.5;
                  too_close = true;
+                 lane=0;
 
 
                }
@@ -147,11 +148,12 @@ int main() {
 
         
           if(too_close){    // Hey! Slow down!
-            ref_vel -= .224;
+            ref_vel -= .112;// .224;
           }
           else if(ref_vel <49.5){  // You are too slow! Hurry up!
-             ref_vel += .224;
+             ref_vel += .112; //.224;
           }
+          
 
 
 
