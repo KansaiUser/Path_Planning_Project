@@ -25,7 +25,7 @@ int main() {
 
   // velocity controller
   PID vel_control;
-  vel_control.Init(0.005, 0.0, 0.01);
+  vel_control.Init(0.005, 0.0, 0.00);
 
   
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
@@ -117,6 +117,7 @@ int main() {
           if(prev_size>0){
             //car_s = end_path_s;
             tip= end_path_s;
+            car_s = end_path_s;
            // std::cout<<"car s: "<<car_s<<" tip "<<end_path_s<<"  d "<<car_d<<std::endl;
           }
 
