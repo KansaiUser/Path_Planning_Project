@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "PID.h"
+//#include "PID.h"
 
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
@@ -24,8 +24,8 @@ int main() {
   uWS::Hub h;
 
   // velocity controller
-  PID vel_control;
-  vel_control.Init(0.005, 0.0, 0.00);
+  //PID vel_control;
+  //vel_control.Init(0.005, 0.0, 0.00);
 
   
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
@@ -68,8 +68,8 @@ int main() {
   double ref_vel= 0.0; // 49.5; (acceleration has been included)
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel,
-               &vel_control]
+               &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel]//,
+              // &vel_control]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -141,7 +141,7 @@ int main() {
 
                  //ref_vel=29.5;
                  // some messages
-                 //std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
+                 std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
                  if(check_car_s-tip<0){
                   // std::cout<<"COLISSION!!!!!!"<<std::endl;
                  }
@@ -161,7 +161,7 @@ int main() {
 
           }  //for all cars
 
-/*                 
+                 
           if(too_close){    // Hey! Slow down!
             ref_vel -= .224;
           }
@@ -169,8 +169,8 @@ int main() {
              ref_vel += .224;
           }
          
-  */      
-
+       
+/*
         double vel_error;
          if(too_close){
              vel_error= ref_vel;
@@ -184,7 +184,7 @@ int main() {
           vel_control.UpdateError(vel_error);
           double new_vel= vel_control.GetResult();
           ref_vel += new_vel;
-
+*/
 
          std::cout<<"Velocity: "<<ref_vel<<std::endl;
 
