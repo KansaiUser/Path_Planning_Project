@@ -191,20 +191,20 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
 
         check_car_s += ((double)prev_size*0.02*check_speed); //project the s value outwards in time
 
-        //TODO continue implementing the too close and left right space algorithm
+        
 
         double left_distance, right_distance;
-        //if(d<(2+4*lane+2)&&d>(2+4*lane-2))
-
-        //if(d<(2+4*lane-2)&&(d>(4*lane-4 ))&&lane>0)
+        
 
         if (d<(2+4*lane-2)&&(d>(4*lane-4 ))&&lane>0){    // car is the left neighbor and egocar is not in 0
              //-check the position of the car  (done in check_car_s)
              if(check_car_s>tip){  //car is ahead
                 left_distance = check_car_s-tip;
-                if(left_distance<30){   //lef_distance < 30
+                if(left_distance<25){   //lef_distance < 30
                   // too close
                   left_road_open=false;
+                //  std::cout<<"Left car ahead too close: "<<left_distance<<std::endl;
+                std::cout<<"Left ahead"<<std::endl;
                 }
                 else{
                   if(left_distance<left_space){
@@ -216,7 +216,9 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
              else{  //the car is behind
               //left_distance = check_car_s-tip;  //negative
               left_distance = a_s- check_car_s ;
-              if(left_distance<30){
+              if(left_distance<5){
+               //  std::cout<<"Left car behind too close: "<<left_distance<<std::endl;
+                std::cout<<"left behind"<<std::endl;
                  left_road_open = false;
               }
               //we dont modify left_space here
@@ -228,6 +230,8 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
           if(check_car_s>tip){  //car is ahead
              right_distance =  check_car_s-tip; 
              if(right_distance<30){
+              // std::cout<<"Right car ahead too close: "<<right_distance<<std::endl;
+              std::cout<<"Right Ahead"<<std::endl;
                right_road_open = false;
              }
              else{
@@ -238,7 +242,9 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
           }
           else{// car is behind
              right_distance = a_s -check_car_s;//  check the distance
-             if(right_distance<30){
+             if(right_distance<10){
+              // std::cout<<"Right car behind too close: "<<right_distance<<std::endl;
+              std::cout<<"Right Behind"<<std::endl;
                right_road_open = false;
              }
           }
@@ -259,6 +265,7 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
 
   // It is too close so let's decide wheter to change lanes
   if(too_close){
+    std::cout<<"Left Space: "<<left_space <<" Right Space: "<<right_space<<std::endl;
        if((lane==0) && (right_road_open)){
          lane=1;  //Move to the right
        }
@@ -268,7 +275,8 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
        else if (lane==1){
           if((left_road_open)&&(right_road_open)){
             //Choose
-              if(left_space>right_space){
+            std::cout<<"Left space: "<<left_space<<" Right space: "<<right_space<<std::endl;
+              if(left_space>right_space-5){
                 lane=0;
               }
               else{

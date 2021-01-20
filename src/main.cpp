@@ -193,13 +193,14 @@ int main() {
           ref_vel += new_vel;
 */
 
-         std::cout<<"Velocity: "<<ref_vel<<std::endl;
+          //std::cout<<"Velocity: "<<ref_vel<<std::endl;
 
+          /* 
           //check if we are out of lane  (car_d)
           if(car_d>(2+4*lane+2)||car_d<(2+4*lane-2)){
             std::cout<<"WHATTTT: Car out of lane "<<car_d<<std::endl;
           }
-
+          */
 
 
 
