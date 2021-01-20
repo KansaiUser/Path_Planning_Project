@@ -40,7 +40,7 @@ In order to do these modifications it works like this:
      * If only the left lane is open go left
      * If only the right lane is open go right
 
-With this simle strategy, we have decided as an ego_car to go left, right or stay on the lane (reducing the speed)
+With this simple strategy, we have decided as an ego_car to go left, right or stay on the lane (reducing the speed)
 
 
 
