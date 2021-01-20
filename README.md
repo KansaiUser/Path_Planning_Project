@@ -43,7 +43,9 @@ In order to do these modifications it works like this:
 With this simple strategy, we have decided as an ego_car to go left, right or stay on the lane (reducing the speed)
 
 
+To run the container
 
+docker run -it -p 4567:4567 -v %cd%:/work udacity/controls_kit:latest
 
    
 ### Simulator.
