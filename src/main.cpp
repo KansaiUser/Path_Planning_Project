@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-//#include "PID.h"
 
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
@@ -12,7 +11,6 @@
 #include "json.hpp"
 #include "spline.h"
 
-//#include "PID.h"
 
 // for convenience
 using nlohmann::json;
@@ -23,9 +21,6 @@ using std::vector;
 int main() {
   uWS::Hub h;
 
-  // velocity controller
-  //PID vel_control;
-  //vel_control.Init(0.005, 0.0, 0.00);
 
   
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
@@ -68,8 +63,7 @@ int main() {
   double ref_vel= 0.0; // 49.5; (acceleration has been included)
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel]//,
-              // &vel_control]
+               &map_waypoints_dx,&map_waypoints_dy , &lane, &ref_vel]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -127,47 +121,7 @@ int main() {
 
          too_close = avoid_collisions(sensor_fusion, lane, prev_size, tip,actual_s);//,&too_close); 
 
-//  From here we are going to replace it
- /*         for (int i=0; i< sensor_fusion.size();i++)
-          {
-             float d = sensor_fusion[i][6];
-             if(d<(2+4*lane+2)&&d>(2+4*lane-2))  //the car is in our lane
-             {  
-               //get the velocity 
-               double vx = sensor_fusion[i][3];
-               double vy = sensor_fusion[i][4];
 
-               double check_speed = distance(0,0,vx,vy); //calculate the magnitude
-               double check_car_s = sensor_fusion[i][5];  //The longitudinal position of the car 
-
-               check_car_s += ((double)prev_size*0.02*check_speed); //project the s value outwards in time
-
-               if((check_car_s>tip) && ((check_car_s-tip)<30)){ //if the car is too near
-
-                 //ref_vel=29.5;
-                 // some messages
-                 std::cout<<"NEAR: check_car: "<<check_car_s<<" tip: "<<tip<<" dif: "<<(check_car_s-tip)<<std::endl;
-                 if(check_car_s-tip<0){
-                  // std::cout<<"COLISSION!!!!!!"<<std::endl;
-                 }
-
-                 //we could take actiom by lowering the speed or indicating the necessity of changing lanes
-
-
-                 //ref_vel=29.5;
-                 too_close = true;
-                 //ref_vel -= .224;
-                 if(lane>0){
-                   lane=0;
-                 }
-
-               }
-             }  // if car in our lane
-
-          }  //for all cars
-*/
-
-//till here
 
           if(too_close){    // Hey! Slow down!
             ref_vel -= .224;
@@ -177,22 +131,6 @@ int main() {
           }
          
        
-/*
-        double vel_error;
-         if(too_close){
-             vel_error= ref_vel;
-         }
-         else{
-           vel_error= ref_vel-49.5;
-         }
-
-          //double vel_error= ref_vel-49.5;
-        
-          vel_control.UpdateError(vel_error);
-          double new_vel= vel_control.GetResult();
-          ref_vel += new_vel;
-*/
-
           //std::cout<<"Velocity: "<<ref_vel<<std::endl;
 
           /* 
@@ -203,16 +141,10 @@ int main() {
           */
 
 
-
-
-
-
           json msgJson;
 
           vector<double> next_x_vals;
           vector<double> next_y_vals;
-
-          
 
           //std::cout<<sensor_fusion<<std::endl;
 
@@ -260,15 +192,7 @@ int main() {
             ptsy.push_back(ref_y);
           }
 
-          // Generate 3 (three) points 
-          // evenly spaced , ahead of the starting reference
-         /* vector<double> next_wp0 = getXY(car_s+30, (2+4*lane) ,
-                                          map_waypoints_s,map_waypoints_x,map_waypoints_y );
-          vector<double> next_wp1 = getXY(car_s+60, (2+4*lane) ,
-                                          map_waypoints_s,map_waypoints_x,map_waypoints_y );
-          vector<double> next_wp2 = getXY(car_s+90, (2+4*lane) ,
-                                          map_waypoints_s,map_waypoints_x,map_waypoints_y );                                                                
-*/
+
         // Generate 4 points
           vector<double> next_wp0 = getXY(car_s+30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_wp1 = getXY(car_s+50, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
