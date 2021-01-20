@@ -165,9 +165,9 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s,
 }
 
 
-bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_size, double tip){
+bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_size, double tip,double a_s){
 
-   bool left_road_open, right_road_open;
+   bool left_road_open= true, right_road_open= true;
    bool too_close=false;
 
    double left_space=7000;
@@ -192,7 +192,64 @@ bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_
 
         //TODO continue implementing the too close and left right space algorithm
 
+        double left_distance, right_distance;
+        //if(d<(2+4*lane+2)&&d>(2+4*lane-2))
 
+        //if(d<(2+4*lane-2)&&(d>(4*lane-4 ))&&lane>0)
+
+        if (d<(2+4*lane-2)&&(d>(4*lane-4 ))&&lane>0){    // car is the left neighbor and egocar is not in 0
+             //-check the position of the car  (done in check_car_s)
+             if(check_car_s>tip){  //car is ahead
+                left_distance = check_car_s-tip;
+                if(left_distance<30){   //lef_distance < 30
+                  // too close
+                  left_road_open=false;
+                }
+                else{
+                  if(left_distance<left_space){
+                    left_space=left_distance;
+                  }
+                }
+
+             }
+             else{  //the car is behind
+              //left_distance = check_car_s-tip;  //negative
+              left_distance = a_s- check_car_s ;
+              if(left_distance<30){
+                 left_road_open = false;
+              }
+              //we dont modify left_space here
+             }
+
+        }
+        else if(d>(2+4*lane+2)&&(d<(4*lane+8))&&lane<2){  // car is in the right neighbor and  egocar is not 2
+          //-check the position of the check_car
+          if(check_car_s>tip){  //car is ahead
+             right_distance =  check_car_s-tip; 
+             if(right_distance<30){
+               right_road_open = false;
+             }
+             else{
+               if(right_distance<right_space){
+                 right_space= right_distance;
+               }
+             }
+          }
+          else{// car is behind
+             right_distance = a_s -check_car_s;//  check the distance
+             if(right_distance<30){
+               right_road_open = false;
+             }
+          }
+        }
+
+        else if(d<(2+4*lane+2)&&d>(2+4*lane-2)) {
+          //check if it is too close 
+           if((check_car_s>tip) && ((check_car_s-tip)<30)){
+             too_close=true;
+           }
+
+        }
 
 
    }

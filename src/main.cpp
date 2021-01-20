@@ -112,6 +112,7 @@ int main() {
           //HERE the code for Sensor Fusion
 
           double tip=car_s;
+          double actual_s= car_s;
 
           //if  something
           if(prev_size>0){
@@ -124,7 +125,7 @@ int main() {
           bool too_close = false;
 
 
-         too_close = avoid_collisions(sensor_fusion, lane, prev_size, tip);//,&too_close); 
+         too_close = avoid_collisions(sensor_fusion, lane, prev_size, tip,actual_s);//,&too_close); 
 
 //  From here we are going to replace it
           for (int i=0; i< sensor_fusion.size();i++)
