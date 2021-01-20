@@ -123,6 +123,10 @@ int main() {
 
           bool too_close = false;
 
+
+         too_close = avoid_collisions(sensor_fusion, lane, prev_size, tip);//,&too_close); 
+
+//  From here we are going to replace it
           for (int i=0; i< sensor_fusion.size();i++)
           {
              float d = sensor_fusion[i][6];
@@ -161,7 +165,9 @@ int main() {
 
           }  //for all cars
 
-                 
+
+//till here
+
           if(too_close){    // Hey! Slow down!
             ref_vel -= .224;
           }
@@ -204,42 +210,13 @@ int main() {
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
-          /**
-           * TODO: define a path made up of (x,y) points that the car will visit
-           *   sequentially every .02 seconds
-           */
+          
 
           //std::cout<<sensor_fusion<<std::endl;
 
      
 
    
-          //Experiment with Frenet  
-   /*       double dist_inc = 0.4;// 0.5;
-          for (int i = 0; i < 50; ++i) {
-             double next_s = car_s+(i+1)*(dist_inc);
-             double next_d = 6; //middle lane
-             //calculate x,y
-             vector<double> next_point;
-             next_point= getXY(next_s, next_d, map_waypoints_s, 
-                         map_waypoints_x,map_waypoints_y);
-             next_x_vals.push_back(next_point[0]);
-             next_y_vals.push_back(next_point[1]);     
-           }
-*/
-//Other
-/*
-          double dist_inc = 0.5;
-          for (int i = 0; i < 50; ++i) {
-               double next_s = car_s+(i+1)*dist_inc;
-               double next_d = 6; 
-               vector<double> xy= getXY(next_s,next_d,
-                                         map_waypoints_s,map_waypoints_x,map_waypoints_y);
-
-               next_x_vals.push_back(xy[0]);
-               next_y_vals.push_back(xy[1]);
-           }
-*/
 
 // spline
 
@@ -342,8 +319,7 @@ int main() {
 
          for(int i=0; i<= 50-previous_path_x.size();i++){
                
-            //double N = (target_dist/(0.02*ref_vel/2.24));
-            double x_point = x_add_on +mini_target; //(target_x)/N;
+            double x_point = x_add_on +mini_target; 
             double y_point = s(x_point);
 
             x_add_on = x_point;

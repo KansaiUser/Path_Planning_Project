@@ -164,4 +164,73 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s,
   return {x,y};
 }
 
+
+bool avoid_collisions(vector<vector<double>> sensor_fusion, int &lane, int prev_size, double tip){
+
+   bool left_road_open, right_road_open;
+   bool too_close=false;
+
+   double left_space=7000;
+   double right_space=7000;
+
+   if(lane==0)
+        left_road_open = false;
+   if(lane==2)
+        right_road_open = false;
+
+   //Calculate proximity and availability
+   for (int i=0; i< sensor_fusion.size();i++){ // For all the cars
+        float d = sensor_fusion[i][6];  //the d of the car
+        //get the velocity 
+        double vx = sensor_fusion[i][3];
+        double vy = sensor_fusion[i][4];
+
+        double check_speed = distance(0,0,vx,vy); //calculate the magnitude of speed
+        double check_car_s = sensor_fusion[i][5];  //The longitudinal position of the car
+
+        check_car_s += ((double)prev_size*0.02*check_speed); //project the s value outwards in time
+
+        //TODO continue implementing the too close and left right space algorithm
+
+
+
+
+   }
+
+
+
+  // It is too close so let's decide wheter to change lanes
+  if(too_close){
+       if((lane==0) && (right_road_open)){
+         lane=1;  //Move to the right
+       }
+       else if((lane==2) && (left_road_open)){
+         lane=1;  //Move to the left
+       }
+       else if (lane==1){
+          if((left_road_open)&&(right_road_open)){
+            //Choose
+              if(left_space>right_space){
+                lane=0;
+              }
+              else{
+                lane=2;
+              }
+          }
+          else if(left_road_open){
+            lane = 0;
+          }
+          else if(right_road_open){
+            lane = 2;
+          }
+       }
+
+
+  }
+
+
+
+   return too_close;
+}
+
 #endif  // HELPERS_H
