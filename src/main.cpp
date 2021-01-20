@@ -128,7 +128,7 @@ int main() {
          too_close = avoid_collisions(sensor_fusion, lane, prev_size, tip,actual_s);//,&too_close); 
 
 //  From here we are going to replace it
-          for (int i=0; i< sensor_fusion.size();i++)
+ /*         for (int i=0; i< sensor_fusion.size();i++)
           {
              float d = sensor_fusion[i][6];
              if(d<(2+4*lane+2)&&d>(2+4*lane-2))  //the car is in our lane
@@ -165,7 +165,7 @@ int main() {
              }  // if car in our lane
 
           }  //for all cars
-
+*/
 
 //till here
 
